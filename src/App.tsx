@@ -10,25 +10,53 @@ function App() {
     const [userAddress,
         setUserAddress] = React.useState < string > ('');
     React.useEffect(() => {
-        askForConnect().then((rs) => {
-            setIsEthEnabled(rs);
-            if (!rs) {
-                return;
-            }
-            getCurrentWeb3Instance()
-                .eth
-                .getAccounts()
-                .then(accounts => {
-                    if (accounts && accounts[0]) {
-                        setUserAddress(accounts[0]);
-                    }
-                });
-        });
+        askForConnect().then(handleAcceptForConnection);
     }, []);
+
+    function handleAcceptForConnection(rs : boolean) {
+        setIsEthEnabled(rs);
+        if (!rs) {
+            return;
+        }
+        getCurrentWeb3Instance()
+            .eth
+            .getAccounts()
+            .then(accounts => {
+                if (accounts && accounts[0]) {
+                    setUserAddress(accounts[0]);
+                }
+            });
+    };
+
     if (!isEthEnabled) {
-        return <div>
-            Please install a wallet plugin such as Metamask to use this dapp.
-        </div>
+        return (<div className="App">
+            <div
+                style={{
+                fontSize: 16,
+                marginTop: 64,
+                marginBottom: 16
+            }}>
+                Please install a wallet plugin such as Metamask to use this dapp.
+                <br/>
+                If you have already installed:
+            </div>
+
+            <button
+                onClick={() => askForConnect().then(handleAcceptForConnection)}
+                style={{
+                borderRadius: 4,
+                backgroundColor: '#008b8b',
+                color: 'white',
+                fontSize: 32,
+                paddingTop: 8,
+                paddingBottom: 8,
+                paddingRight: 32,
+                paddingLeft: 32,
+                fontWeight: 'bold'
+            }}>
+                Connect
+            </button>
+        </div>);
     }
     return (
         <div className="App">
